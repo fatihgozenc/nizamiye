@@ -32,4 +32,51 @@
         echo $this->error;
       }
     }
+
+    // PREPARE STATEMENT WITH QUERY
+    public function query($sql){
+      $this->statement = $this->handler->prepare($sql);
+    }
+
+    // BIND VALUES
+    public function bind($param, $value, $type = null){
+      if(is_null($type)){
+        switch(true){
+          case is_int($value):
+            $type = PDO::PARAM_INT;
+          break;
+          case is_bool($value):
+            $type = PDO::PARAM_BOOL;
+          break;
+          case is_null($value):
+            $type = PDO::PARAM_NULL;
+          break;
+          default:
+            $type = PDO::PARAM_STR;
+        }
+      }
+      $this->statement->bindValue($param, $value, $type);
+    }
+    
+    // EXECUTE THE PREPARED STATEMENT
+    public function execute(){
+      return $this->statement->execute();
+    }
+
+    // GET RESULT SET AS ARRAY OF OBJECTS
+    public function resultSet(){
+      $this->execute();
+      return $this->statement->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    // GET SINGLE RECORD AS OBJECT
+    public function single(){
+      $this->execute();
+      return $this->statement->fetch(PDO::FETCH_OBJ);
+    }
+
+    // GET ROW COUNT
+    public function rowCount(){
+      return $this->statement->rowCount();
+    }
   } 
